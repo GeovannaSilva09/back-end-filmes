@@ -25,6 +25,8 @@ const controllerFilme = require('./controller/filme/controller_filme.js')
 
 //Endpoints para o CRUD de filmes
 
+
+//Retorna a lista de filmes
 app.get('/v1/locadora/filme', cors(), async function (request, response) {
     //Chama a função da controller para retornar todos os filmes
     let filme = await controllerFilme.listarFilmes()
@@ -33,6 +35,8 @@ app.get('/v1/locadora/filme', cors(), async function (request, response) {
     response.json(filme)
 })
 
+
+//Retorna um filme filtrando pelo ID
 app.get('/v1/locadora/filme/:id', cors(), async function (request, response) {
 
     //Recebe o ID enviado na requisição via parametro
@@ -45,7 +49,9 @@ app.get('/v1/locadora/filme/:id', cors(), async function (request, response) {
     response.json(filme)
 })
 
-app.post('/v1/locadora/filme/', cors(), bodyParserJSON, async function (request, response) {
+
+// Insere um novo filme no BD
+app.post('/v1/locadora/filme', cors(), bodyParserJSON, async function (request, response) {
     //Recebe o objeto JSON pelo body da requisição 
     let dadosBody = request.body
 
@@ -58,6 +64,44 @@ app.post('/v1/locadora/filme/', cors(), bodyParserJSON, async function (request,
     response.status(filme.status_code)
     response.json(filme)
 })
+
+
+//
+app.put('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (request, response) {
+    //Recebe os dados do body
+    let dadosBody = request.body
+
+    //Recebe o id do filme encaminhado pela url
+    let idFilme = request.params.id
+
+    //Recebe o content Type da requisição
+    let contentType = request.headers['content-type']
+
+    
+    //Chama a função da controller para atualizar o filme, enviamos os dados do body e o content-type
+    let filme = await controllerFilme.atualizarFilme(dadosBody, idFilme, contentType)
+
+    response.status(filme.status_code)
+    response.json(filme)
+})
+
+
+app.delete('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (request, response) {
+    //Recebe os dados do body
+    let dadosBody = request.body
+
+    //Recebe o id do filme encaminhado pela url
+    let idFilme = request.params.id
+
+    //Chama a função da controller para excluir o filme, enviamos os dados do body e o content-type
+    let filme = await controllerFilme.excluirFilme(dadosBody, idFilme)
+
+    response.status(filme.status_code)
+    response.json(filme)
+})
+
+
+
 
 app.listen(PORT, function () {
     console.log('API aguardando requisições!!!')
