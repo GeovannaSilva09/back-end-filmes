@@ -87,14 +87,12 @@ app.put('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (reques
 
 
 app.delete('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (request, response) {
-    //Recebe os dados do body
-    let dadosBody = request.body
 
     //Recebe o id do filme encaminhado pela url
     let idFilme = request.params.id
 
     //Chama a função da controller para excluir o filme, enviamos os dados do body e o content-type
-    let filme = await controllerFilme.excluirFilme(dadosBody, idFilme)
+    let filme = await controllerFilme.excluirFilme(idFilme)
 
     response.status(filme.status_code)
     response.json(filme)

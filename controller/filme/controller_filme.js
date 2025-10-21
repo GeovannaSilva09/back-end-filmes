@@ -60,10 +60,10 @@ const buscarFilmeId = async function (id) {
 
             if (result) {
                 if (result.length > 0) {
-                    MESSAGE.HEADER.status      = MESSAGE.SUCCESS_REQUEST.status
+                    MESSAGE.HEADER.status = MESSAGE.SUCCESS_REQUEST.status
                     MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_REQUEST.status_code
-                    MESSAGE.HEADER.message     = MESSAGE.SUCCESS_REQUEST.message
-                    MESSAGE.HEADER.response    = result
+                    MESSAGE.HEADER.message = MESSAGE.SUCCESS_REQUEST.message
+                    MESSAGE.HEADER.response = result
                     return MESSAGE.HEADER //200
                 } else {
                     return MESSAGE.ERROR_NOT_FOUND //404
@@ -99,11 +99,21 @@ const inserirFilme = async function (filme, contentType) {
                 let result = await filmeDAO.setInsertFilms(filme, contentType)
 
                 if (result) {
-                    MESSAGE.HEADER.status = MESSAGE.SUCCESS_CREATED_ITEM.status
-                    MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_CREATED_ITEM.status_code
-                    MESSAGE.HEADER.message = MESSAGE.SUCCESS_CREATED_ITEM.message
+                    //Chama a função para receber o ID gerado no Banco de Dados
+                    let lastIdFilme = await filmeDAO.getSelectLastIdFilm()
+
+                    if(lastIdFilme){
+                    filme.id                    = lastIdFilme
+
+                    MESSAGE.HEADER.status       = MESSAGE.SUCCESS_CREATED_ITEM.status
+                    MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_CREATED_ITEM.status_code
+                    MESSAGE.HEADER.message      = MESSAGE.SUCCESS_CREATED_ITEM.message
+                    MESSAGE.HEADER.response     = filme
 
                     return MESSAGE.HEADER //201
+                    }else{
+                        return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
+                    }
                 } else {
                     return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
                 }
@@ -146,10 +156,10 @@ const atualizarFilme = async function (filme, id, contentType) {
                     let result = await filmeDAO.setUpdateFilms(filme)
 
                     if (result) {
-                        MESSAGE.HEADER.status       = MESSAGE.SUCCESS_UPDATED_ITEM.status
-                        MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
-                        MESSAGE.HEADER.message      = MESSAGE.SUCCESS_UPDATED_ITEM.message
-                        MESSAGE.HEADER.response     = filme
+                        MESSAGE.HEADER.status = MESSAGE.SUCCESS_UPDATED_ITEM.status
+                        MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
+                        MESSAGE.HEADER.message = MESSAGE.SUCCESS_UPDATED_ITEM.message
+                        MESSAGE.HEADER.response = filme
 
                         return MESSAGE.HEADER //200
                     } else {
@@ -176,31 +186,27 @@ const excluirFilme = async function (id) {
 
     try {
 
-                //Chama a função para validar a consistência do ID e verificar se existe no banco de dados                
-                let validarID = await buscarFilmeId(id)
+        //Chama a função para validar a consistência do ID e verificar se existe no banco de dados                
+        let validarID = await buscarFilmeId(id)
 
-                //Verifica se o ID existe no BD, caso exista teremos o status 200  
-                if (validarID.status_code == 200) {
+        //Verifica se o ID existe no BD, caso exista teremos o status 200  
+        if (validarID.status_code == 200) {
 
-                    //Adicionando o ID no JSON com os dados do filme
-                    id = parseInt(id)
+            //Chama a função do DAO para deletar um filme
+            let result = await filmeDAO.setDeleteFilms(id)
 
-                    //Chama a função do DAO para deletar um filme
-                    let result = await filmeDAO.setDeleteFilms(id)
+            if (result) {
+                MESSAGE.HEADER.status = MESSAGE.SUCCESS_DELETED_ITEM.status
+                MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_DELETED_ITEM.status_code
+                MESSAGE.HEADER.message = MESSAGE.SUCCESS_DELETED_ITEM.message //200
 
-                    if (result) {
-                        MESSAGE.HEADER.status       = MESSAGE.SUCCESS_DELETED_ITEM.status
-                        MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_DELETED_ITEM.status_code
-                        MESSAGE.HEADER.message      = MESSAGE.SUCCESS_DELETED_ITEM.message //200
-                        MESSAGE.HEADER.response     = result
-
-                        return MESSAGE.HEADER //200
-                    } else {
-                        return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
-                    }
-                } else {
-                    return validarID //retorno da função de buscarFilmeID (400 ou 404 ou 500)
-                }
+                return MESSAGE.HEADER //200
+            } else {
+                return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
+            }
+        } else {
+            return validarID //retorno da função de buscarFilmeID (400 ou 404 ou 500)
+        }
     } catch (error) {
         return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }

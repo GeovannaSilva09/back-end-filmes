@@ -98,6 +98,25 @@ const getSelectByIdFilms = async function (id) {
 
 }
 
+const getSelectLastIdFilm = async function () {
+    try {
+        //script SQL    
+        let sql = `select id from tbl_filme order by id desc limit 1`
+
+        //Executa no BD o script SQL
+        let result = await prisma.$queryRawUnsafe(sql)
+
+        //Validação para identificar se o retono do banco é um ARRAY (vazio ou com dados)
+        if (Array.isArray(result))
+            return Number(result[0].id)
+        else
+            return false
+
+    } catch (error) {
+        //console.log(error)
+        return false
+    }
+}
 
 //Insere um filme existente no banco de dados
 const setInsertFilms = async function (filme) {
@@ -181,6 +200,7 @@ const setDeleteFilms = async function (id) {
 module.exports = {
     getSelectallFilms,
     getSelectByIdFilms,
+    getSelectLastIdFilm,
     setInsertFilms,
     setUpdateFilms,
     setDeleteFilms
