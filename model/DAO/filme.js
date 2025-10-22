@@ -98,6 +98,7 @@ const getSelectByIdFilms = async function (id) {
 
 }
 
+//Retorna o último filme adicionado 
 const getSelectLastIdFilm = async function () {
     try {
         //script SQL    

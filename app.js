@@ -22,6 +22,7 @@ app.use((request, response, next) => {
 
 //Import das controller da API
 const controllerFilme = require('./controller/filme/controller_filme.js')
+const controllerGenero = require('./controller/genero/controller_genero.js')
 
 //Endpoints para o CRUD de filmes
 
@@ -66,7 +67,7 @@ app.post('/v1/locadora/filme', cors(), bodyParserJSON, async function (request, 
 })
 
 
-//
+//Atualiza um filme existente no Banco de Dados
 app.put('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (request, response) {
     //Recebe os dados do body
     let dadosBody = request.body
@@ -77,7 +78,7 @@ app.put('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (reques
     //Recebe o content Type da requisição
     let contentType = request.headers['content-type']
 
-    
+
     //Chama a função da controller para atualizar o filme, enviamos os dados do body e o content-type
     let filme = await controllerFilme.atualizarFilme(dadosBody, idFilme, contentType)
 
@@ -85,7 +86,7 @@ app.put('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (reques
     response.json(filme)
 })
 
-
+//Apaga um Filme existente no Banco de Dados 
 app.delete('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (request, response) {
 
     //Recebe o id do filme encaminhado pela url
@@ -98,7 +99,41 @@ app.delete('/v1/locadora/filme/:id', cors(), bodyParserJSON, async function (req
     response.json(filme)
 })
 
+//Retorna a lista de gêneros
+app.get('/v1/locadora/genero', cors(), bodyParserJSON, async function (request, response) {
 
+    //Chama a função da controller para listar todos os gêneros
+    let genero = await controllerGenero.listarGeneros()
+
+    response.status(genero.status_code)
+    response.json(genero)
+})
+
+
+//Retorna um gênero filtrando por ID
+// app.get('v1/locadora/genero/:id', cors(), bodyParserJSON, async function (request, response) {
+
+//     //Recebe o id do gênero encaminhado pela url
+//     let idGenero = request.params.id
+//     //Chama a função da controller para listar um gênero filtrando por ID
+//     let genero = await controllerGenero.buscarGeneroId(idGenero)
+
+//     response.status(genero.status_code)
+//     response.json(genero)
+// })
+
+
+app.get('/v1/locadora/genero/:id', cors(), async function (request, response) {
+
+    //Recebe o ID enviado na requisição via parametro
+    let idGenero = request.params.id
+
+    //Chama a função da controller para retornar todos os filmes
+    let genero = await controllerGenero.buscarGeneroId(idGenero)
+
+    response.status(genero.status_code)
+    response.json(genero)
+})
 
 
 app.listen(PORT, function () {
