@@ -136,6 +136,43 @@ app.get('/v1/locadora/genero/:id', cors(), async function (request, response) {
 })
 
 
+app.post('/v1/locadora/genero', cors(), bodyParserJSON, async function (request, response) {
+     //Recebe o objeto JSON pelo body da requisição 
+     let dadosBody = request.body
+
+     //Recebe o content Type da requisição
+     let contentType = request.headers['content-type'] 
+
+     let genero = await controllerGenero.inserirGenero(dadosBody, contentType)   
+
+    response.status(genero.status_code)
+    response.json(genero)
+    
+})
+
+app.put('/v1/locadora/genero/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let dadosBody = request.body
+    let idGenero = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let genero = await controllerGenero.atualizarGenero(dadosBody, idGenero, contentType)
+
+    response.status(genero.status_code)
+    response.json(genero)
+})
+
+
+app.delete('/v1/locadora/genero/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let idGenero = request.params.id
+
+    let genero = await controllerGenero.excluirGenero(idGenero)
+
+    response.status(genero.status_code)
+    response.json(genero)
+})
+
 app.listen(PORT, function () {
     console.log('API aguardando requisições!!!')
 })
