@@ -24,6 +24,7 @@ app.use((request, response, next) => {
 const controllerFilme  = require('./controller/filme/controller_filme.js')
 const controllerGenero = require('./controller/genero/controller_genero.js')
 const controllerClass  = require('./controller/classificacao/controller_classificacao.js')
+const controllerPais   = require('./controller/pais/controller_pais.js')
 
 //Endpoints para o CRUD de filmes
 
@@ -111,18 +112,6 @@ app.get('/v1/locadora/genero', cors(), bodyParserJSON, async function (request, 
 })
 
 
-//Retorna um gênero filtrando por ID
-// app.get('v1/locadora/genero/:id', cors(), bodyParserJSON, async function (request, response) {
-
-//     //Recebe o id do gênero encaminhado pela url
-//     let idGenero = request.params.id
-//     //Chama a função da controller para listar um gênero filtrando por ID
-//     let genero = await controllerGenero.buscarGeneroId(idGenero)
-
-//     response.status(genero.status_code)
-//     response.json(genero)
-// })
-
 
 app.get('/v1/locadora/genero/:id', cors(), async function (request, response) {
 
@@ -178,6 +167,7 @@ app.delete('/v1/locadora/genero/:id', cors(), bodyParserJSON, async function (re
 
 /************************************************************************************************************************* */
 
+/* CLASSIFICAÇÃO */
 
 
 
@@ -188,7 +178,6 @@ app.get('/v1/locadora/classificacao', cors(), bodyParserJSON, async function (re
     response.status(classificacao.status_code)
     response.json(classificacao)
 })
-
 
 
 
@@ -241,6 +230,74 @@ app.delete('/v1/locadora/classificacao/:id', cors(), bodyParserJSON, async funct
 
     response.status(classificacao.status_code)
     response.json(classificacao)
+})
+
+
+/***************************************************************************************************/
+
+/* PAIS */
+
+
+
+app.get('/v1/locadora/pais', cors(), bodyParserJSON, async function (request, response) {
+
+    //Chama a função da controller para listar tudo
+    let pais = await controllerPais.listarPaises()
+    response.status(pais.status_code)
+    response.json(pais)
+})
+
+
+
+
+app.get('/v1/locadora/pais/:id', cors(), async function (request, response) {
+
+    //Recebe o ID enviado na requisição via parametro
+    let idPais = request.params.id
+
+    //Chama a função da controller para retornar todos os filmes
+    let pais = await controllerPais.buscarPaisId(idPais)
+
+    response.status(pais.status_code)
+    response.json(pais)
+})
+
+
+app.post('/v1/locadora/pais', cors(), bodyParserJSON, async function (request, response) {
+     //Recebe o objeto JSON pelo body da requisição 
+     let dadosBody = request.body
+
+     //Recebe o content Type da requisição
+     let contentType = request.headers['content-type'] 
+
+     let pais = await controllerPais.inserirPais(dadosBody, contentType)   
+
+    response.status(pais.status_code)
+    response.json(pais)
+    
+})
+
+app.put('/v1/locadora/pais/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let dadosBody = request.body
+    let idPais = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let pais = await controllerPais.atualizarPais(dadosBody, idPais, contentType)
+
+    response.status(pais.status_code)
+    response.json(pais)
+})
+
+
+app.delete('/v1/locadora/pais/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let idPais = request.params.id
+
+    let pais = await controllerPais.excluirPais(idPais)
+
+    response.status(pais.status_code)
+    response.json(pais)
 })
 
 

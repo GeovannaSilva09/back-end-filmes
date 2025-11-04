@@ -1,20 +1,19 @@
 /******************************************************************************************************
  * Objetivo: Arquivo responsável pela manipulação de dados entre o APP e a Model
  *              (Validações, tratamentos de dados, tratamento de erros, etc)
- * Data: 29/10/2025
+ * Data: 04/11/2025
  * Autora: Geovanna
  * versão: 1.0
  *****************************************************************************************************/
 
-//Import do arquivo DAO para manipular o CRUD no BD
-const classificacaoDAO = require('../../model/DAO/classificacao.js')
+//Import do arquivo DAO
+const paisDAO = require('../../model/DAO/pais.js')
 
-
-//Import do arquivo que padroniza todas as mensagens
+//Import do arquivo de mensagens
 const MESSAGE_DEFAULT = require('../modulo/config.messages.js')
 
-//Retorna a lista de classificação
-const listarClassificacao = async function () {
+//Retorna a lista de paises
+const listarPaises = async function () {
 
     //Realizando cópia do objeto MESSAGE_DEFAULT, para que as alterações
     // dessa função não interfira em outras funções
@@ -23,13 +22,14 @@ const listarClassificacao = async function () {
 
     try {
 
-        let result = await classificacaoDAO.getSelectallRating()
+        // Chama a função do DAO para retornar a lista 
+        let result = await paisDAO.getSelectAllCountries()
         if (result) {
 
             if (result.length > 0) {
                 MESSAGE.HEADER.status = MESSAGE.SUCCESS_REQUEST.status
                 MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_REQUEST.status_code
-                MESSAGE.HEADER.response.classificacao = result
+                MESSAGE.HEADER.response.pais = result
 
                 return MESSAGE.HEADER //200
             } else {
@@ -47,8 +47,8 @@ const listarClassificacao = async function () {
 
 
 
-//Retorna pelo id 
-const buscarClassificacaoId = async function (id) {
+//Retorna pais pelo id
+const buscarPaisId = async function (id) {
 
     //Realizando uma cópia do objeto MESSAGE_DEFAULT, permitindo que as alterações desta função
     //não interfiram em outras funções    
@@ -57,7 +57,7 @@ const buscarClassificacaoId = async function (id) {
         //Validação de campo obrigatório
         if (id != '' && id != null && id != undefined && !isNaN(id) && id > 0) {
             //Chama a função para filtrar pelo ID
-            let result = await classificacaoDAO.getSelectByIdRating(parseInt(id))
+            let result = await paisDAO.getSelectByIdCountries(parseInt(id))
 
 
             if (result) {
@@ -84,8 +84,8 @@ const buscarClassificacaoId = async function (id) {
 
 }
 
-
-const inserirClassificacao = async function (classificacao, contentType) {
+//Insere um novo país
+const inserirPais = async function (pais, contentType) {
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
     try {
@@ -93,23 +93,24 @@ const inserirClassificacao = async function (classificacao, contentType) {
 
 
             //Chama a função de validação dos dados de cadastro
-            let validarDados = await validarDadosClass(classificacao)
+            let validarDados = await validarDadosPais(pais)
 
             if (!validarDados) {
 
-                //Chama a função do DAO para inserir um novo genero
-                let result = await classificacaoDAO.setInsertRating(classificacao, contentType)
+                //Chama a função do DAO para inserir um novo pais
+                let result = await paisDAO.setInsertCountries(pais, contentType)
+                console.log(result)
                 if (result) {
                     //Chama a função para receber o ID gerado no Banco de Dados
-                    let lastIdClassificacao = await classificacaoDAO.getSelectLastIdRating()
+                    let lastIdPais = await paisDAO.getSelectLastIdCountry()
+                    console.log(lastIdPais)
+                    if (lastIdPais) {
+                        pais.id = lastIdPais
 
-                    if (lastIdClassificacao) {
-                        classificacao.id = lastIdClassificacao
-
-                        MESSAGE.HEADER.status = MESSAGE.SUCCESS_CREATED_ITEM.status
-                        MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_CREATED_ITEM.status_code
-                        MESSAGE.HEADER.message = MESSAGE.SUCCESS_CREATED_ITEM.message
-                        MESSAGE.HEADER.response = classificacao
+                        MESSAGE.HEADER.status       = MESSAGE.SUCCESS_CREATED_ITEM.status
+                        MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_CREATED_ITEM.status_code
+                        MESSAGE.HEADER.message      = MESSAGE.SUCCESS_CREATED_ITEM.message
+                        MESSAGE.HEADER.response     = pais
 
                         return MESSAGE.HEADER //201
                     } else {
@@ -135,37 +136,38 @@ const inserirClassificacao = async function (classificacao, contentType) {
 }
 
 
-const atualizarClassificacao = async function (classificacao, id, contentType) {
+//Atualiza um país
+const atualizarPais = async function (pais, id, contentType) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            let validarDados = await validarDadosClass(classificacao)
+            let validarDados = await validarDadosPais(pais)
 
             if (!validarDados) {
 
-                let validarID = await buscarClassificacaoId(id)
+                let validarID = await buscarPaisId(id)
 
                 if (validarID.status_code == 200) {
 
-                    classificacao.id = parseInt(id)
+                    pais.id = parseInt(id)
 
-                    let result = await classificacaoDAO.setUpdateRatings(classificacao)
+                    let result = await paisDAO.setUpdateCountries(pais)
 
                     if (result) {
-                        MESSAGE.HEADER.status = MESSAGE.SUCCESS_UPDATED_ITEM.status
-                        MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
-                        MESSAGE.HEADER.message = MESSAGE.SUCCESS_UPDATED_ITEM.message
-                        MESSAGE.HEADER.response = classificacao
+                        MESSAGE.HEADER.status       = MESSAGE.SUCCESS_UPDATED_ITEM.status
+                        MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
+                        MESSAGE.HEADER.message      = MESSAGE.SUCCESS_UPDATED_ITEM.message
+                        MESSAGE.HEADER.response     = pais
 
                         return MESSAGE.HEADER //200
                     } else {
                         return MESSAGE.ERROR_INTERNAL_SERVER_MODEL //500
                     }
                 } else {
-                    return validarID //  (400 ou 404 ou 500)
+                    return validarID // (400 ou 404 ou 500)
                 }
             } else {
                 return validarDados // retorno da função de validar dados 400
@@ -174,24 +176,24 @@ const atualizarClassificacao = async function (classificacao, id, contentType) {
             return MESSAGE.ERROR_CONTENT_TYPE //415
         }
     } catch (error) {
-
         console.log(error)
         return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 }
 
 
-const excluirClassificacao = async function (id) {
+//Apaga um pais
+const excluirPais = async function (id) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
     try {
 
-        let validarID = await buscarClassificacaoId(id)
+        let validarID = await buscarPaisId(id)
 
         if (validarID.status_code == 200) {
 
-            let result = await classificacaoDAO.setDeleteRatings(id)
+            let result = await paisDAO.setDeleteCountries(id)
 
             if (result) {
                 MESSAGE.HEADER.status       = MESSAGE.SUCCESS_DELETED_ITEM.status
@@ -213,36 +215,30 @@ const excluirClassificacao = async function (id) {
 
 }
 
-
-const validarDadosClass = (classificacao) => {
+// Validação de dados dos países
+const validarDadosPais = async function (pais) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
-    if (!classificacao.faixa_etaria ||
-        classificacao.faixa_etaria.length > 8) {
-
-        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [FAIXA ETÁRIA] inválido!!!'
+    if (pais.nome == '' || pais.nome == null || pais.nome == undefined || pais.nome.length > 100) {
+        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [NOME] inválido!!!'
         return MESSAGE.ERROR_REQUIRED_FIELDS
-    }
 
-    if (!classificacao.descricao ||
-        classificacao.descricao.length > 100) {
-
-        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [DESCRIÇÃO] inválido!!!'
+    }else if (pais.sigla == '' || pais.sigla == null || pais.sigla == undefined || pais.sigla.length > 3) {
+        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [SIGLA] inválido!!!'
         return MESSAGE.ERROR_REQUIRED_FIELDS
-    }
 
-    return false
+    }else {
+        return false
+    }
 }
 
 
 
-
-
 module.exports = {
-    listarClassificacao,
-    buscarClassificacaoId,
-    inserirClassificacao,
-    atualizarClassificacao,
-    excluirClassificacao
+    listarPaises,
+    buscarPaisId,
+    inserirPais,
+    atualizarPais,
+    excluirPais
 }

@@ -15,10 +15,10 @@ const prisma = new PrismaClient()
 
 
 //Retorna todos as classificações do banco de dados
-const  getSelectallRating  = async function () {
+const getSelectallRating = async function () {
     try {
         //script SQL    
-        let sql = `select * from tbl_genero order by classificacao_id desc`
+        let sql = `select * from tbl_classificacao order by classificacao_id desc`
 
         //Executa no BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -41,7 +41,7 @@ const  getSelectallRating  = async function () {
 const getSelectByIdRating = async function (id) {
     try {
         //script SQL    
-        let sql = `select * from tbl_classificacao where id=${id}`
+        let sql = `select * from tbl_classificacao where classificacao_id=${id}`
 
         //Executa no BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
@@ -63,14 +63,14 @@ const getSelectByIdRating = async function (id) {
 const getSelectLastIdRating = async function () {
     try {
         //script SQL    
-        let sql = `select id from tbl_classificacao order by classificacao_id desc limit 1`
+        let sql = `select classificacao_id from tbl_classificacao order by classificacao_id desc limit 1`
 
         //Executa no BD o script SQL
         let result = await prisma.$queryRawUnsafe(sql)
 
         //Validação para identificar se o retono do banco é um ARRAY (vazio ou com dados)
         if (Array.isArray(result))
-            return Number(result[0].id)
+            return Number(result[0].classificacao_id)
         else
             return false
 
@@ -80,32 +80,36 @@ const getSelectLastIdRating = async function () {
     }
 }
 
-//Insere um filme existente no banco de dados
+//Insere uma classificação no banco de dados
 const setInsertRating = async function (classificacao) {
+    console.log(classificacao)
     try {
-        let sql = `insert into tbl_genero (faixa_etaria, descricao)
-        values('${classificacao.faixa_etaria}')`
+        let sql = `insert into tbl_classificacao (faixa_etaria, descricao)
+        values('${classificacao.faixa_etaria}',
+                '${classificacao.descricao}'
+        )`
 
         let result = await prisma.$executeRawUnsafe(sql)
-
         if (result)
             return true
-        else
+        else {
+            console.log(result)
             return false
+        }
     } catch (error) {
-
+        console.log(error)
         return false
     }
 
 }
 
-//Atualiza um filme existente no banco de dados filtrando pelo ID
+//Atualiza uma classificação existente no banco de dados filtrando pelo ID
 const setUpdateRatings = async function (classificacao) {
     try {
-        let sql = `update tbl_genero set
-        faixa_etaria       =  '${classificacao.faixa_etaria}',
-        descricao      =  '${classificacao.descricao}'
-        where classificacao_id    = ${classificacao.id}`
+        let sql = `update tbl_classificacao set
+        faixa_etaria                =  '${classificacao.faixa_etaria}',
+        descricao                   =  '${classificacao.descricao}'
+        where classificacao_id      =  ${classificacao.id}`
 
         // $executeRawUnsafe() -> Permite apenas executar scripts SQL que não tem retorno de dados (INSERT, UPDATE, DELETE)
         let result = await prisma.$executeRawUnsafe(sql)
@@ -123,10 +127,10 @@ const setUpdateRatings = async function (classificacao) {
 }
 
 
-//Apaga um filme existente no banco de dados filtrando pelo ID
-const setDeleteFilms = async function (id) {
+//Apaga uma classificação existente no banco de dados filtrando pelo ID
+const setDeleteRatings = async function (id) {
     try {
-        let sql = `delete from tbl_classificacao where id = ${id}`
+        let sql = `delete from tbl_classificacao where classificacao_id = ${id}`
 
         // $executeRawUnsafe() -> Permite apenas executar scripts SQL que não tem retorno de dados (INSERT, UPDATE, DELETE)
         let result = await prisma.$executeRawUnsafe(sql)
@@ -140,4 +144,14 @@ const setDeleteFilms = async function (id) {
     }
 
 
+}
+
+
+module.exports = {
+    getSelectallRating,
+    getSelectByIdRating,
+    getSelectLastIdRating,
+    setInsertRating,
+    setUpdateRatings,
+    setDeleteRatings
 }
