@@ -21,8 +21,9 @@ app.use((request, response, next) => {
 })
 
 //Import das controller da API
-const controllerFilme = require('./controller/filme/controller_filme.js')
+const controllerFilme  = require('./controller/filme/controller_filme.js')
 const controllerGenero = require('./controller/genero/controller_genero.js')
+const controllerClass  = require('./controller/classificacao/controller_classificacao.js')
 
 //Endpoints para o CRUD de filmes
 
@@ -172,6 +173,76 @@ app.delete('/v1/locadora/genero/:id', cors(), bodyParserJSON, async function (re
     response.status(genero.status_code)
     response.json(genero)
 })
+
+
+
+/************************************************************************************************************************* */
+
+
+
+
+app.get('/v1/locadora/classificacao', cors(), bodyParserJSON, async function (request, response) {
+
+    //Chama a função da controller para listar tudo
+    let classificacao = await controllerClass.listarClassificacao()
+    response.status(classificacao.status_code)
+    response.json(classificacao)
+})
+
+
+
+
+
+app.get('/v1/locadora/classificacao/:id', cors(), async function (request, response) {
+
+    //Recebe o ID enviado na requisição via parametro
+    let idClass = request.params.id
+
+    //Chama a função da controller para retornar todos os filmes
+    let classificacao = await controllerClass.buscarClassificacaoId(idClass)
+
+    response.status(classificacao.status_code)
+    response.json(classificacao)
+})
+
+
+app.post('/v1/locadora/classificacao', cors(), bodyParserJSON, async function (request, response) {
+     //Recebe o objeto JSON pelo body da requisição 
+     let dadosBody = request.body
+
+     //Recebe o content Type da requisição
+     let contentType = request.headers['content-type'] 
+
+     let classificacao = await controllerClass.inserirClassificacao(dadosBody, contentType)   
+
+    response.status(classificacao.status_code)
+    response.json(classificacao)
+    
+})
+
+app.put('/v1/locadora/classificacao/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let dadosBody = request.body
+    let idClass = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let classificacao = await controllerClass.atualizarClassificacao(dadosBody, idClass, contentType)
+
+    response.status(classificacao.status_code)
+    response.json(classificacao)
+})
+
+
+app.delete('/v1/locadora/classificacao/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let idClass = request.params.id
+
+    let classificacao = await controllerClass.excluirClassificacao(idClass)
+
+    response.status(classificacao.status_code)
+    response.json(classificacao)
+})
+
 
 app.listen(PORT, function () {
     console.log('API aguardando requisições!!!')
