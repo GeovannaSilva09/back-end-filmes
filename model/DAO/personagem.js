@@ -75,7 +75,7 @@ const getSelectLastIdCharacter = async function () {
 //Insere um pais no Banco de Dados
 const setInsertCharacters = async function (personagem) {
     try {
-        let sql = `insert into tbl_personagem (nome, genero,, idade, imagem)
+        let sql = `insert into tbl_personagem (nome, genero, idade, imagem)
         values('${personagem.nome}',
               '${personagem.genero}',
               '${personagem.idade}',
@@ -103,7 +103,7 @@ const setUpdateCharacters = async function (personagem) {
         genero              =  '${personagem.genero}',
         idade               =  '${personagem.idade}',
         imagem              =  '${personagem.imagem}'
-        where pais_id       =   ${pais.id}`
+        where personagem_id       =   ${personagem.id}`
 
         // $executeRawUnsafe() -> Permite apenas executar scripts SQL que não tem retorno de dados (INSERT, UPDATE, DELETE)
         let result = await prisma.$executeRawUnsafe(sql)

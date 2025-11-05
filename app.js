@@ -21,10 +21,11 @@ app.use((request, response, next) => {
 })
 
 //Import das controller da API
-const controllerFilme  = require('./controller/filme/controller_filme.js')
-const controllerGenero = require('./controller/genero/controller_genero.js')
-const controllerClass  = require('./controller/classificacao/controller_classificacao.js')
-const controllerPais   = require('./controller/pais/controller_pais.js')
+const controllerFilme       = require('./controller/filme/controller_filme.js')
+const controllerGenero      = require('./controller/genero/controller_genero.js')
+const controllerClass       = require('./controller/classificacao/controller_classificacao.js')
+const controllerPais        = require('./controller/pais/controller_pais.js')
+const controllerPersonagem  = require('./controller/personagem/controller_personagem.js')
 
 //Endpoints para o CRUD de filmes
 
@@ -299,6 +300,72 @@ app.delete('/v1/locadora/pais/:id', cors(), bodyParserJSON, async function (requ
     response.status(pais.status_code)
     response.json(pais)
 })
+
+
+/*******************************************************************************************/
+/** PERSONAGEM */
+
+app.get('/v1/locadora/personagem', cors(), bodyParserJSON, async function (request, response) {
+
+    //Chama a função da controller para listar tudo
+    let personagem = await controllerPersonagem.listarPersonagens()
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
+
+
+
+app.get('/v1/locadora/personagem/:id', cors(), async function (request, response) {
+
+    //Recebe o ID enviado na requisição via parametro
+    let idPersonagem = request.params.id
+
+    //Chama a função da controller 
+    let pais = await controllerPersonagem.buscarPersonagemId(idPersonagem)
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
+
+app.post('/v1/locadora/personagem', cors(), bodyParserJSON, async function (request, response) {
+     //Recebe o objeto JSON pelo body da requisição 
+     let dadosBody = request.body
+
+     //Recebe o content Type da requisição
+     let contentType = request.headers['content-type'] 
+
+     let personagem = await controllerPersonagem.inserirPersonagem(dadosBody, contentType)   
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+    
+})
+
+app.put('/v1/locadora/personagem/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let dadosBody = request.body
+    let idPersonagem = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let personagem = await controllerPais.atualizarPais(dadosBody, idPersonagem, contentType)
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
+
+app.delete('/v1/locadora/personagem/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let idPersonagem = request.params.id
+
+    let pais = await controllerPersonagem.excluirPersonagem(idPersonagem)
+
+    response.status(personagem.status_code)
+    response.json(personagem)
+})
+
 
 
 app.listen(PORT, function () {

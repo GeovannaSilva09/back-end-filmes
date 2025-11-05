@@ -7,13 +7,13 @@
  *****************************************************************************************************/
 
 //Import do arquivo DAO
-const personagemDAO = require('../../model/DAO/personagem.js')
+const atorDAO = require('../../model/DAO/ator.js')
 
 //Import do arquivo de mensagens
 const MESSAGE_DEFAULT = require('../modulo/config.messages.js')
 
-//Retorna a lista de personagens
-const listarPersonagens = async function () {
+//Retorna a lista de paises
+const listarAtores = async function () {
 
     //Realizando cópia do objeto MESSAGE_DEFAULT, para que as alterações
     // dessa função não interfira em outras funções
@@ -23,7 +23,7 @@ const listarPersonagens = async function () {
     try {
 
         // Chama a função do DAO para retornar a lista 
-        let result = await personagemDAO.getSelectAllCharacters()
+        let result = await atorDAO.getSelectAllActors()
         if (result) {
 
             if (result.length > 0) {
@@ -47,8 +47,8 @@ const listarPersonagens = async function () {
 
 
 
-//Retorna personagens pelo id
-const buscarPersonagemId = async function (id) {
+//Retorna atores pelo id
+const buscarAtorId = async function (id) {
 
     //Realizando uma cópia do objeto MESSAGE_DEFAULT, permitindo que as alterações desta função
     //não interfiram em outras funções    
@@ -57,7 +57,7 @@ const buscarPersonagemId = async function (id) {
         //Validação de campo obrigatório
         if (id != '' && id != null && id != undefined && !isNaN(id) && id > 0) {
             //Chama a função para filtrar pelo ID
-            let result = await personagemDAO.getSelectByIdCharacters(parseInt(id))
+            let result = await atorDAO.getSelectByIdActors(parseInt(id))
 
 
             if (result) {
@@ -84,8 +84,8 @@ const buscarPersonagemId = async function (id) {
 
 }
 
-//Insere um novo personagem
-const inserirPersonagem = async function (personagem, contentType) {
+//Insere um novo país
+const inserirAtor = async function (ator, contentType) {
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
     try {
@@ -93,24 +93,24 @@ const inserirPersonagem = async function (personagem, contentType) {
 
 
             //Chama a função de validação dos dados de cadastro
-            let validarDados = await validarDadosPersonagem(personagem)
+            let validarDados = await validarDadosAtor(ator)
 
             if (!validarDados) {
 
-                //Chama a função do DAO para inserir um novo personagem
-                let result = await personagemDAO.getSelectByIdCharacters(personagem, contentType)
+                //Chama a função do DAO para inserir um novo ator
+                let result = await atorDAO.setInsertActor(ator, contentType)
                 console.log(result)
                 if (result) {
                     //Chama a função para receber o ID gerado no Banco de Dados
-                    let lastIdPersonagem = await personagemDAO.getSelectLastIdCharacter()
-                    console.log(lastIdPersonagem)
-                    if (lastIdPersonagem) {
-                        personagem.id = lastIdPersonagem
+                    let lastIdAtor = await atorDAO.getSelectLastIdActor()
+                    console.log(lastIdAtor)
+                    if (lastIdAtor) {
+                        ator.id = lastIdAtor
 
-                        MESSAGE.HEADER.status = MESSAGE.SUCCESS_CREATED_ITEM.status
-                        MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_CREATED_ITEM.status_code
-                        MESSAGE.HEADER.message = MESSAGE.SUCCESS_CREATED_ITEM.message
-                        MESSAGE.HEADER.response = personagem
+                        MESSAGE.HEADER.status       = MESSAGE.SUCCESS_CREATED_ITEM.status
+                        MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_CREATED_ITEM.status_code
+                        MESSAGE.HEADER.message      = MESSAGE.SUCCESS_CREATED_ITEM.message
+                        MESSAGE.HEADER.response     = ator
 
                         return MESSAGE.HEADER //201
                     } else {
@@ -136,31 +136,31 @@ const inserirPersonagem = async function (personagem, contentType) {
 }
 
 
-//Atualiza um personagem
-const atualizarPersonagem = async function (personagem, id, contentType) {
+//Atualiza um ator
+const atualizarAtor = async function (ator, id, contentType) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
     try {
         if (String(contentType).toUpperCase() == 'APPLICATION/JSON') {
 
-            let validarDados = await validarDadosPersonagem(personagem)
+            let validarDados = await validarDadosAtor(ator)
 
             if (!validarDados) {
 
-                let validarID = await buscarPersonagemId(id)
+                let validarID = await buscarAtorId(id)
 
                 if (validarID.status_code == 200) {
 
-                    personagem.id = parseInt(id)
+                    ator.id = parseInt(id)
 
-                    let result = await personagemDAO.setUpdateCharacters(personagem)
+                    let result = await atorDAO.setUpdateActor(ator)
 
                     if (result) {
                         MESSAGE.HEADER.status       = MESSAGE.SUCCESS_UPDATED_ITEM.status
                         MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
                         MESSAGE.HEADER.message      = MESSAGE.SUCCESS_UPDATED_ITEM.message
-                        MESSAGE.HEADER.response     = personagem
+                        MESSAGE.HEADER.response     = ator
 
                         return MESSAGE.HEADER //200
                     } else {
@@ -182,18 +182,18 @@ const atualizarPersonagem = async function (personagem, id, contentType) {
 }
 
 
-//Apaga um personagem
-const excluirPersonagem = async function (id) {
+//Apaga um ator
+const excluirAtor = async function (id) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
     try {
 
-        let validarID = await buscarPaisId(id)
+        let validarID = await buscarAtorId(id)
 
         if (validarID.status_code == 200) {
 
-            let result = await personagemDAO.setDeleteCharacters(id)
+            let result = await atorDAO.setDeleteActor(id)
 
             if (result) {
                 MESSAGE.HEADER.status       = MESSAGE.SUCCESS_DELETED_ITEM.status
@@ -215,28 +215,20 @@ const excluirPersonagem = async function (id) {
 
 }
 
-// Validação de dados dos personagens
-const validarDadosPersonagem = async function (personagem) {
+// Validação de dados dos atores
+const validarDadosAtor = async function (ator) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
-    if (personagem.nome == '' || personagem.nome == null || personagem.nome == undefined || personagem.nome.length > 100) {
+    if (ator.nome == '' || ator.nome == null || ator.nome == undefined || ator.nome.length > 100) {
         MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [NOME] inválido!!!'
         return MESSAGE.ERROR_REQUIRED_FIELDS
 
-    } else if (personagem.genero.length > 20 || personagem.nome == undefined) {
-        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [GENERO] inválido!!!'
+    }else if (ator.sigla == '' || ator.sigla == null || ator.sigla == undefined || ator.sigla.length > 3) {
+        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [SIGLA] inválido!!!'
         return MESSAGE.ERROR_REQUIRED_FIELDS
 
-    } else if (personagem.idade == undefined ) {
-        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [IDADE] inválido!!!'
-        return MESSAGE.ERROR_REQUIRED_FIELDS
-
-    } else if (personagem.imagem == '' || personagem.imagem == undefined || personagem.imagem.length > 200) {
-        MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [IDADE] inválido!!!'
-        return MESSAGE.ERROR_REQUIRED_FIELDS
-    } 
-    else {
+    }else {
         return false
     }
 }
@@ -244,9 +236,9 @@ const validarDadosPersonagem = async function (personagem) {
 
 
 module.exports = {
-    listarPersonagens,
-    buscarPersonagemId,
-    inserirPersonagem,
-    atualizarPersonagem,
-    excluirPersonagem
+    listarAtores,
+    buscarAtorId,
+    inserirAtor,
+    atualizarAtor,
+    excluirAtor
 }
