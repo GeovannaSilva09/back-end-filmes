@@ -26,6 +26,7 @@ const controllerGenero      = require('./controller/genero/controller_genero.js'
 const controllerClass       = require('./controller/classificacao/controller_classificacao.js')
 const controllerPais        = require('./controller/pais/controller_pais.js')
 const controllerPersonagem  = require('./controller/personagem/controller_personagem.js')
+const controllerAtor        = require('./controller/ator/controller_ator.js')
 
 //Endpoints para o CRUD de filmes
 
@@ -367,7 +368,71 @@ app.delete('/v1/locadora/personagem/:id', cors(), bodyParserJSON, async function
 })
 
 
+/***************************************************************************************************** */
+//   ATOR
+
+
+app.get('/v1/locadora/ator', cors(), bodyParserJSON, async function (request, response) {
+
+    //Chama a função da controller para listar tudo
+    let ator = await controllerAtor.listarAtores()
+    response.status(ator.status_code)
+    response.json(personagem)
+})
+
+
+
+
+app.get('/v1/locadora/ator/:id', cors(), async function (request, response) {
+
+    //Recebe o ID enviado na requisição via parametro
+    let idAtor = request.params.id
+
+    //Chama a função da controller 
+    let ator = await controllerAtor.buscarAtorId(idAtor)
+
+    response.status(ator.status_code)
+    response.json(ator)
+})
+
+
+app.post('/v1/locadora/ator', cors(), bodyParserJSON, async function (request, response) {
+     //Recebe o objeto JSON pelo body da requisição 
+     let dadosBody = request.body
+
+     //Recebe o content Type da requisição
+     let contentType = request.headers['content-type'] 
+
+     let ator = await controllerAtor.inserirAtor(dadosBody, contentType)   
+
+    response.status(ator.status_code)
+    response.json(ator)
+    
+})
+
+app.put('/v1/locadora/ator/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let dadosBody = request.body
+    let idAtor = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let ator = await controllerAtor.atualizarAtor(dadosBody, idAtor, contentType)
+
+    response.status(ator.status_code)
+    response.json(ator)
+})
+
+
+app.delete('/v1/locadora/ator/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let idAtor = request.params.id
+
+    let ator = await controllerAtor.excluirAtor(idAtor)
+
+    response.status(ator.status_code)
+    response.json(ator)
+})
 
 app.listen(PORT, function () {
-    console.log('API aguardando requisições!!!')
+    console.log(`API aguardando requisições na porta ${PORT}!!!`)
 })
