@@ -124,24 +124,24 @@ const listarFilmesIdGenero = async function (id) {
 
 
 //Retorna os generos filtrando pelo id do filme
-const listarGenerosIdFilme = async function (id) {
+const listarGenerosIdFilme = async function (idFilme) {
 
     //Realizando uma cópia do objeto MESSAGE_DEFAULT, permitindo que as alterações desta função
     //não interfiram em outras funções    
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
     try {
         //Validação de campo obrigatório
-        if (idFilme != '' && idFilme != null && idFilme != undefined && !isNaN(id) && idFilme > 0) {
+        if (idFilme != '' && idFilme != null && idFilme != undefined && !isNaN(idFilme) && idFilme > 0) {
             //Chama a função para filtrar pelo ID
             let result = await filmeGeneroDAO.getSelectGenresByIdFilm(parseInt(idFilme))
 
 
-            if (resultFilmesGeneros) {
-                if (resultFilmesGeneros.length > 0) {
-                    MESSAGE.HEADER.status = MESSAGE.SUCCESS_REQUEST.status
-                    MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_REQUEST.status_code
-                    MESSAGE.HEADER.message = MESSAGE.SUCCESS_REQUEST.message
-                    MESSAGE.HEADER.response.film_genre = result
+            if (result) {
+                if (result.length > 0) {
+                    MESSAGE.HEADER.status               = MESSAGE.SUCCESS_REQUEST.status
+                    MESSAGE.HEADER.status_code          = MESSAGE.SUCCESS_REQUEST.status_code
+                    MESSAGE.HEADER.message              = MESSAGE.SUCCESS_REQUEST.message
+                    MESSAGE.HEADER.response.film_genre  = result
                     return MESSAGE.HEADER //200
                 } else {
                     return MESSAGE.ERROR_NOT_FOUND //404    
@@ -155,6 +155,7 @@ const listarGenerosIdFilme = async function (id) {
         }
 
     } catch (error) {
+        console.log(error)
         return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
     }
 
@@ -180,12 +181,12 @@ const inserirFilmeGenero = async function (filmeGenero, contentType) {
                 if (result) {
 
                     //Chama a função para receber o ID gerado no Banco de Dados
-                    let lastIdFilmeGenero = await filmeGeneroDAO.getSelectLastId()
+                    let lastIdFilmGenre = await filmeGeneroDAO.getSelectLastId()
 
-                    console.log(lastIdFilmeGenero)
-                    if (lastIdFilmeGenero) {
+                    console.log(lastIdFilmGenre)
+                    if (lastIdFilmGenre) {
 
-                        filmeGenero.id                  = lastIdFilmeGenero
+                        filmeGenero.id                  = lastIdFilmGenre
 
                         MESSAGE.HEADER.status           = MESSAGE.SUCCESS_CREATED_ITEM.status
                         MESSAGE.HEADER.status_code      = MESSAGE.SUCCESS_CREATED_ITEM.status_code
@@ -209,7 +210,7 @@ const inserirFilmeGenero = async function (filmeGenero, contentType) {
 
 
     } catch (error) {
-
+console.log(error)
         return MESSAGE.ERROR_INTERNAL_SERVER_CONTROLLER //500
 
     }
@@ -301,10 +302,10 @@ const validarDadosFilmeGenero = async function (filmeGenero) {
 
     let MESSAGE = JSON.parse(JSON.stringify(MESSAGE_DEFAULT))
 
-    if (filmeGenero.id == '' || filmeGenero.id == null || filmeGenero.id == undefined || isNaN(filmeGenero.id_filme) || filmeGenero.id_filme >= 0) {
+    if (filmeGenero.id_filme == '' || filmeGenero.id_filme == null || filmeGenero.id_filme == undefined || isNaN(filmeGenero.id_filme) || filmeGenero.id_filme <= 0) {
         MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [ID_FILME] inválido!!!' //400
         return MESSAGE.ERROR_REQUIRED_FIELDS
-    } else if (filmeGenero.id_genero == '' || filmeGenero.id_genero == null || filmeGenero.id_genero == undefined || isNaN(filmeGenero.id_genero) || filmeGenero.id_genero >= 0) {
+    } else if (filmeGenero.id_genero == '' || filmeGenero.id_genero == null || filmeGenero.id_genero == undefined || isNaN(filmeGenero.id_genero) || filmeGenero.id_genero <= 0) {
         MESSAGE.ERROR_REQUIRED_FIELDS.invalid_field = 'Atributo [ID_GENERO] inválido!!!' //400
         return MESSAGE.ERROR_REQUIRED_FIELDS
     }else {

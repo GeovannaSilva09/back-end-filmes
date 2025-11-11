@@ -88,13 +88,13 @@ const getSelectFilmsByIdGenres = async function (idFilme) {
 
     try {
         //Script SQL
-        let sql = `select tbl_filme.id, tbl_filme.nome
+        let sql = `select tbl_genero.id, tbl_genero.nome
                     from tbl_filme
                              inner join tbl_filme_genero
                                  on tbl_filme.id = tbl_filme_genero.id_filme
                              inner join tbl_genero
                                     on tbl_genero.genero_id  = tbl_filme_genero.id_genero 
-                    where tbl_genero.genero_id = ${idGenero}`
+                    where tbl_filme.id = ${idGenero}`
 
         //Validação para identificar se o retorno do banco é um ARRAY (vazio ou com dados)
         let result = await prisma.$queryRawUnsafe(sql)
