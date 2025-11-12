@@ -98,7 +98,7 @@ const inserirPersonagem = async function (personagem, contentType) {
             if (!validarDados) {
 
                 //Chama a função do DAO para inserir um novo personagem
-                let result = await personagemDAO.getSelectByIdCharacters(personagem, contentType)
+                let result = await personagemDAO.setInsertCharacters(personagem, contentType)
                 console.log(result)
                 if (result) {
                     //Chama a função para receber o ID gerado no Banco de Dados
@@ -189,7 +189,7 @@ const excluirPersonagem = async function (id) {
 
     try {
 
-        let validarID = await buscarPaisId(id)
+        let validarID = await buscarPersonagemId(id)
 
         if (validarID.status_code == 200) {
 

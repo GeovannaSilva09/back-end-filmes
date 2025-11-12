@@ -37,7 +37,7 @@ const getSelectByIdActors = async function (id) {
 
     try {
         //Script SQL
-        let sql = `select * from tbl_actor where ator_id = ${id}`
+        let sql = `select * from tbl_ator where ator_id = ${id}`
 
         //Validação para identificar se o retorno do banco é um ARRAY (vazio ou com dados)
         let result = await prisma.$queryRawUnsafe(sql)
@@ -75,10 +75,10 @@ const getSelectLastIdActor = async function () {
 //Insere um pais no Banco de Dados
 const setInsertActor = async function (ator) {
     try {
-        let sql = `insert into tbl_ator (nome, genero, idade, imagem)
+        let sql = `insert into tbl_ator (nome, genero, data_nascimento, imagem)
         values('${ator.nome}',
               '${ator.genero}',
-              '${ator.idade}',
+              '${ator.data_nascimento}',
               '${ator.imagem}'
             )`
 
@@ -101,7 +101,7 @@ const setUpdateActor = async function (ator) {
         let sql = `update tbl_ator set
         nome                =  '${ator.nome}',
         genero              =  '${ator.genero}',
-        idade               =  '${ator.idade}',
+        data_nascimento     =  '${ator.data_nascimento}',
         imagem              =  '${ator.imagem}'
         where ator_id       =   ${ator.id}`
 

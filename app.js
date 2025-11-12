@@ -27,6 +27,7 @@ const controllerClass       = require('./controller/classificacao/controller_cla
 const controllerPais        = require('./controller/pais/controller_pais.js')
 const controllerPersonagem  = require('./controller/personagem/controller_personagem.js')
 const controllerAtor        = require('./controller/ator/controller_ator.js')
+const controllerDiretor     = require('./controller/diretor/controller_diretor.js')
 
 //Endpoints para o CRUD de filmes
 
@@ -323,7 +324,7 @@ app.get('/v1/locadora/personagem/:id', cors(), async function (request, response
     let idPersonagem = request.params.id
 
     //Chama a função da controller 
-    let pais = await controllerPersonagem.buscarPersonagemId(idPersonagem)
+    let personagem = await controllerPersonagem.buscarPersonagemId(idPersonagem)
 
     response.status(personagem.status_code)
     response.json(personagem)
@@ -350,7 +351,7 @@ app.put('/v1/locadora/personagem/:id', cors(), bodyParserJSON, async function (r
     let idPersonagem = request.params.id
     let contentType = request.headers ['content-type']
 
-    let personagem = await controllerPais.atualizarPais(dadosBody, idPersonagem, contentType)
+    let personagem = await controllerPersonagem.atualizarPersonagem(dadosBody, idPersonagem, contentType)
 
     response.status(personagem.status_code)
     response.json(personagem)
@@ -361,7 +362,7 @@ app.delete('/v1/locadora/personagem/:id', cors(), bodyParserJSON, async function
 
     let idPersonagem = request.params.id
 
-    let pais = await controllerPersonagem.excluirPersonagem(idPersonagem)
+    let personagem = await controllerPersonagem.excluirPersonagem(idPersonagem)
 
     response.status(personagem.status_code)
     response.json(personagem)
@@ -377,7 +378,7 @@ app.get('/v1/locadora/ator', cors(), bodyParserJSON, async function (request, re
     //Chama a função da controller para listar tudo
     let ator = await controllerAtor.listarAtores()
     response.status(ator.status_code)
-    response.json(personagem)
+    response.json(ator)
 })
 
 
@@ -431,6 +432,72 @@ app.delete('/v1/locadora/ator/:id', cors(), bodyParserJSON, async function (requ
 
     response.status(ator.status_code)
     response.json(ator)
+})
+
+
+/***************************************************************************************************** */
+//  DIRETOR
+
+
+app.get('/v1/locadora/diretor', cors(), bodyParserJSON, async function (request, response) {
+
+    //Chama a função da controller para listar tudo
+    let diretor = await controllerDiretor.listarDiretores()
+    response.status(diretor.status_code)
+    response.json(diretor)
+})
+
+
+
+
+app.get('/v1/locadora/diretor/:id', cors(), async function (request, response) {
+
+    //Recebe o ID enviado na requisição via parametro
+    let idDiretor = request.params.id
+
+    //Chama a função da controller 
+    let diretor = await controllerDiretor.buscarDiretorId(idDiretor)
+
+    response.status(diretor.status_code)
+    response.json(diretor)
+})
+
+
+app.post('/v1/locadora/diretor', cors(), bodyParserJSON, async function (request, response) {
+     //Recebe o objeto JSON pelo body da requisição 
+     let dadosBody = request.body
+
+     //Recebe o content Type da requisição
+     let contentType = request.headers['content-type'] 
+
+     let diretor = await controllerDiretor.inserirDiretor(dadosBody, contentType)   
+
+    response.status(diretor.status_code)
+    response.json(diretor)
+    
+})
+
+app.put('/v1/locadora/diretor/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let dadosBody = request.body
+    let idDiretor = request.params.id
+    let contentType = request.headers ['content-type']
+
+    let diretor = await controllerDiretor.atualizarDiretor(dadosBody, idDiretor, contentType)
+
+    response.status(diretor.status_code)
+    response.json(diretor)
+})
+
+
+app.delete('/v1/locadora/diretor/:id', cors(), bodyParserJSON, async function (request, response){
+
+    let idDiretor = request.params.id
+
+    let diretor = await controllerDiretor.excluirDiretor(idDiretor)
+
+    response.status(diretor.status_code)
+    response.json(diretor)
 })
 
 app.listen(PORT, function () {

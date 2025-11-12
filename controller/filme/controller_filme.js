@@ -73,6 +73,14 @@ const buscarFilmeId = async function (id) {
 
             if (result) {
                 if (result.length > 0) {
+
+                    for(filme of result) {
+                        let resultGeneros = await controllerFilmeGenero.listarGenerosIdFilme(filme.id)
+                        if(resultGeneros.status_code == 200)
+                        filme.genero = resultGeneros.response.film_genre
+                    }
+    
+
                     MESSAGE.HEADER.status = MESSAGE.SUCCESS_REQUEST.status
                     MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_REQUEST.status_code
                     MESSAGE.HEADER.message = MESSAGE.SUCCESS_REQUEST.message
@@ -214,10 +222,10 @@ const atualizarFilme = async function (filme, id, contentType) {
                     let result = await filmeDAO.setUpdateFilms(filme)
 
                     if (result) {
-                        MESSAGE.HEADER.status = MESSAGE.SUCCESS_UPDATED_ITEM.status
-                        MESSAGE.HEADER.status_code = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
-                        MESSAGE.HEADER.message = MESSAGE.SUCCESS_UPDATED_ITEM.message
-                        MESSAGE.HEADER.response = filme
+                        MESSAGE.HEADER.status       = MESSAGE.SUCCESS_UPDATED_ITEM.status
+                        MESSAGE.HEADER.status_code  = MESSAGE.SUCCESS_UPDATED_ITEM.status_code
+                        MESSAGE.HEADER.message      = MESSAGE.SUCCESS_UPDATED_ITEM.message
+                        MESSAGE.HEADER.response     = filme
 
                         return MESSAGE.HEADER //200
                     } else {

@@ -1,5 +1,5 @@
 /************************************************************************************************
- * Objetivo: Arquivo responsável pela realização do CRUD de Personagens no Banco de Dados MySQL
+ * Objetivo: Arquivo responsável pela realização do CRUD de diretores no Banco de Dados MySQL
  * Data: 05/11/2025
  * Autor: Geovanna
  * Versão: 1.0
@@ -75,10 +75,10 @@ const getSelectLastIdDirector = async function () {
 //Insere um diretor no Banco de Dados
 const setInsertDirectors = async function (diretor) {
     try {
-        let sql = `insert into tbl_diretor (nome, genero, idade, imagem)
+        let sql = `insert into tbl_diretor (nome, genero, data_nascimento, imagem)
         values('${diretor.nome}',
               '${diretor.genero}',
-              '${diretor.idade}',
+              '${diretor.data_nascimento}',
               '${diretor.imagem}'
             )`
 
@@ -95,13 +95,13 @@ const setInsertDirectors = async function (diretor) {
 
 }
 
-//Atualiza um país existente no Banco de Dados
+//Atualiza um diretor existente no Banco de Dados
 const setUpdateDirectors = async function (diretor) {
     try {
         let sql = `update tbl_diretor set
         nome                =  '${diretor.nome}',
         genero              =  '${diretor.genero}',
-        idade               =  '${diretor.idade}',
+        data_nascimento     =  '${diretor.data_nascimento}',
         imagem              =  '${diretor.imagem}'
         where diretor_id    =   ${diretor.id}`
 
@@ -120,11 +120,11 @@ const setUpdateDirectors = async function (diretor) {
 
 }
 
-//Apaga um país existente no Banco de Dados filtrando pelo id
-const setDeleteCharacters = async function (id) {
+//Apaga um diretor existente no Banco de Dados filtrando pelo id
+const setDeleteDirectors = async function (id) {
 
     try {
-        let sql = `delete from tbl_personagem where personagem_id = ${id}`
+        let sql = `delete from tbl_diretor where diretor_id = ${id}`
 
         let result = await prisma.$executeRawUnsafe(sql)
 
@@ -141,10 +141,11 @@ const setDeleteCharacters = async function (id) {
 
 
 module.exports = {
-    getSelectAllCharacters,
-    getSelectByIdCharacters,
-    getSelectLastIdCharacter,
-    setInsertCharacters,
-    setUpdateCharacters,
-    setDeleteCharacters
+
+    getSelectAllDirectors,
+    getSelectByIdDirector,
+    getSelectLastIdDirector,
+    setInsertDirectors,
+    setUpdateDirectors,
+    setDeleteDirectors
 }

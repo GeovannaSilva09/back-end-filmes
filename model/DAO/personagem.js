@@ -72,13 +72,14 @@ const getSelectLastIdCharacter = async function () {
 
 }
 
-//Insere um pais no Banco de Dados
+//Insere um personagem no Banco de Dados
 const setInsertCharacters = async function (personagem) {
+    console.log(personagem)
     try {
         let sql = `insert into tbl_personagem (nome, genero, idade, imagem)
         values('${personagem.nome}',
               '${personagem.genero}',
-              '${personagem.idade}',
+              ${personagem.idade},
               '${personagem.imagem}'
             )`
 
@@ -99,10 +100,10 @@ const setInsertCharacters = async function (personagem) {
 const setUpdateCharacters = async function (personagem) {
     try {
         let sql = `update tbl_personagem set
-        nome                =  '${personagem.nome}',
-        genero              =  '${personagem.genero}',
-        idade               =  '${personagem.idade}',
-        imagem              =  '${personagem.imagem}'
+        nome                      =  '${personagem.nome}',
+        genero                    =  '${personagem.genero}',
+        idade                     =  ${personagem.idade},
+        imagem                    =  '${personagem.imagem}'
         where personagem_id       =   ${personagem.id}`
 
         // $executeRawUnsafe() -> Permite apenas executar scripts SQL que não tem retorno de dados (INSERT, UPDATE, DELETE)
@@ -120,7 +121,7 @@ const setUpdateCharacters = async function (personagem) {
 
 }
 
-//Apaga um país existente no Banco de Dados filtrando pelo id
+//Apaga um personagem existente no Banco de Dados filtrando pelo id
 const setDeleteCharacters = async function (id) {
 
     try {
