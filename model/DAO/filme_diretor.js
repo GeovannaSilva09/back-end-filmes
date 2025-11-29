@@ -132,7 +132,7 @@ const getSelectLastId = async function () {
 //Insere um filme diretor no Banco de Dados
 const setInsertFilmsDirectors = async function (filmeDiretor) {
     try {
-        let sql = `insert into tbl_filme_diretor (id_filme, id_genero)
+        let sql = `insert into tbl_filme_diretor (id_filme, id_diretor)
         values(${filmeDiretor.id_filme}, ${filmeDiretor.id_diretor})`
 
         let result = await prisma.$executeRawUnsafe(sql)
@@ -148,7 +148,7 @@ const setInsertFilmsDirectors = async function (filmeDiretor) {
 
 }
 
-//Atualiza um filmeGênero existente no Banco de Dados
+//Atualiza um filme diretor existente no Banco de Dados
 const setUpdateFilmsDirectors = async function (filmeDiretor) {
     try {
         let sql = `update tbl_filme_diretor set
